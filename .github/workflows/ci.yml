@@ -1,0 +1,48 @@
+name: CI
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [14]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Java ${{ matrix.java }}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+
+      - name: Build
+        run: ./gradlew build
+
+      - name: Run tests
+        run: ./gradlew test
+
+  build-jar:
+    needs: [test]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [14]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Java ${{ matrix.java }}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+
+      - name: Build JAR
+        run: ./gradlew jar
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: testutil.jar
+          path: build/libs/testutil-*.jar
