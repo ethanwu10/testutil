@@ -4,7 +4,7 @@ Some utility classes for JUnit 5.
 
 This library is written in Kotlin, and is likewise best used in Kotlin due to
 Kotlin's superior type system. However, it is still quite functional in Java,
-albeit significantly more verbose.
+albeit more verbose.
 
 ## Classes
 
@@ -51,10 +51,10 @@ Stream<DynamicTest> testSort() {
             new Pair<>("unique items", List.of(1, 2, 3, 4)),
             new Pair<>("some duplicate items", List.of(1, 2, 2, 4)),
             new Pair<>("all duplicate items", List.of(1, 1, 1, 1))
-    ).join(l -> new ArrayList<>(l)).join(
-            new Pair<String, Function1<List<Integer>, List<Integer>>>("", l -> l),
-            new Pair<String, Function1<List<Integer>, List<Integer>>>("reversed", l -> { Collections.reverse(l); return l; }),
-            new Pair<String, Function1<List<Integer>, List<Integer>>>("shuffled", l -> { Collections.shuffle(l, rng); return l; })
+    ).join(l -> new ArrayList<>(l)).<List<Integer>>join(
+            new Pair<>("", l -> l),
+            new Pair<>("reversed", l -> { Collections.reverse(l); return l; }),
+            new Pair<>("shuffled", l -> { Collections.shuffle(l, rng); return l; })
     ).join(l -> {
         List<Integer> sorted = new ArrayList<>(l);
         Collections.sort(sorted);
@@ -72,8 +72,9 @@ Stream<DynamicTest> testSort() {
 
 ![test results](doc/img/demoTestSort.png)
 
-Note that in Java, it is necessary to explicitly write the types of the
-functions passed to `join` (notice that you must use Kotlin's `Function1`); in
+Note that in Java, it is necessary to explicitly write the type argument to
+`join`, which is the return value of the transformer functions (otherwise Java
+gives up on inference and declares that the return type is `Object`); in
 Kotlin, type inference can successfully infer without explicit type arguments.
 
 In Java, the single-argument form of `join` is used in combination with an

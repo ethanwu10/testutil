@@ -22,10 +22,10 @@ public class TestCaseGeneratorTestJava {
                 new Pair<>("unique items", List.of(1, 2, 3, 4)),
                 new Pair<>("some duplicate items", List.of(1, 2, 2, 4)),
                 new Pair<>("all duplicate items", List.of(1, 1, 1, 1))
-        ).join(l -> new ArrayList<>(l)).join(
-                new Pair<String, Function1<List<Integer>, List<Integer>>>("", l -> l),
-                new Pair<String, Function1<List<Integer>, List<Integer>>>("reversed", l -> { Collections.reverse(l); return l; }),
-                new Pair<String, Function1<List<Integer>, List<Integer>>>("shuffled", l -> { Collections.shuffle(l, rng); return l; })
+        ).join(l -> new ArrayList<>(l)).<List<Integer>>join(
+                new Pair<>("", l -> l),
+                new Pair<>("reversed", l -> { Collections.reverse(l); return l; }),
+                new Pair<>("shuffled", l -> { Collections.shuffle(l, rng); return l; })
         ).join(l -> {
             List<Integer> sorted = new ArrayList<>(l);
             Collections.sort(sorted);
@@ -48,9 +48,9 @@ public class TestCaseGeneratorTestJava {
         List<DynamicTest> testStream = TestCaseGenerator.create(
                 new Pair<>("a1", "a1"),
                 new Pair<>("a2", "a2")
-        ).join(
-                new Pair<String, Function1<String, String>>("b1", s -> s + "b1"),
-                new Pair<String, Function1<String, String>>("b2", s -> s + "b2")
+        ).<String>join(
+                new Pair<>("b1", s -> s + "b1"),
+                new Pair<>("b2", s -> s + "b2")
         ).join(collectedInputs::add).toDynamicTestStream().collect(Collectors.toList());
 
         assertEquals(4, testStream.size());
